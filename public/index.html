@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mint Budget</title>
+<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#3ecfa0"><link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3fbf8;--card:#fff;--ink:#12332b;--mut:#6b8a82;--mint:#3ecfa0;--mint2:#d9f5ea;--warn:#e9a93a;--bad:#e5645f;--line:#dcece6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a17;--card:#14241f;--ink:#e3f5ee;--mut:#87a89e;--mint2:#1b3a30;--line:#23403a}}
+:root[data-theme="dark"]{--bg:#0e1a17;--card:#14241f;--ink:#e3f5ee;--mut:#87a89e;--mint2:#1b3a30;--line:#23403a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+aside{position:fixed;top:0;bottom:0;left:0;width:240px;background:var(--card);border-right:1px solid var(--line);padding:calc(20px + env(safe-area-inset-top,0px)) 14px 20px;z-index:20;transition:transform .25s;display:flex;flex-direction:column;gap:4px}
+.logo{font-weight:700;font-size:18px;margin:0 8px 16px;color:var(--mint)}
+aside button{all:unset;cursor:pointer;padding:10px 12px;border-radius:12px;color:var(--mut);display:flex;gap:10px;align-items:center}
+aside button:hover{background:var(--mint2)}aside button.on{background:var(--mint2);color:var(--ink);font-weight:600}
+main{margin-left:240px;padding:24px;max-width:980px}
+.top{display:none}
+.scrim{display:none}
+@media(max-width:760px){aside{transform:translateX(-100%)}aside.open{transform:none}.scrim.open{display:block;position:fixed;inset:0;background:#0006;z-index:15}
+main{margin:0;padding:16px}.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}.top button{all:unset;cursor:pointer;font-size:22px;padding:4px 8px}}
+h2{margin:0 0 4px;font-size:22px}
+.home{position:relative;overflow:hidden;min-height:calc(100vh - 80px);padding:4px;isolation:isolate}
+.home .d1,.home .d2,.home .d3{position:absolute;z-index:-1;pointer-events:none}
+.home .d1{width:300px;top:-60px;right:-80px;opacity:.22}
+.home .d2{width:340px;bottom:-70px;left:-90px;opacity:.14;transform:rotate(-15deg)}
+.home .d3{right:6%;bottom:12%;opacity:.25}
+.hero{display:flex;gap:16px;align-items:center;margin:8px 0 22px}.hero .lg{width:64px;height:64px;flex:none}.hero h2{font-size:26px}.hero .sub{margin:0}
+.home .card{background:color-mix(in srgb,var(--card) 85%,transparent);backdrop-filter:blur(6px)}p.sub{margin:0 0 18px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.stat small{color:var(--mut);display:block}.stat b{font-size:20px}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--mint2);color:var(--ink)}
+.ok{background:var(--mint);color:#06281e}.tight{background:var(--warn);color:#2b1c00}.bad{background:var(--bad);color:#fff}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.row .g{flex:1;min-width:0}
+.row small{color:var(--mut)}
+input,select{font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.btn{all:unset;cursor:pointer;background:var(--mint);color:#06281e;font-weight:600;padding:10px 16px;border-radius:12px;display:inline-block;margin-top:12px}
+.btn.s{background:var(--mint2);color:var(--ink);padding:6px 12px;margin:0;font-size:13px;font-weight:500}
+.x{all:unset;cursor:pointer;color:var(--mut);padding:4px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}.chip{all:unset;cursor:pointer;padding:8px 14px;border-radius:99px;background:var(--mint2)}.chip.on{background:var(--mint);color:#06281e;font-weight:600}
+.chart{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;border-radius:9px;background:var(--mint2);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--mint)}
+.alert{padding:10px 14px;border-radius:12px;background:var(--mint2);margin-bottom:8px}.alert.bad{background:var(--bad);color:#fff}
+.tip{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.tip:last-child{border:0}
+</style></head><body>
+<aside id="side"><div class="logo">🌿 Mint Budget</div></aside>
+<div class="scrim" id="scrim" onclick="tg()"></div>
+<main><div class="top"><button onclick="tg()">☰</button><b>Mint Budget</b></div><div id="v"></div></main>
+<script>
+const $=s=>document.querySelector(s);
+const NAV=[['home','🏠','Home'],['dash','📊','Dashboard'],['setup','⚙️','Budget Setup'],['bills','🧾','Bills'],['quick','⚡','Quick Spend'],['tips','💡','Tips'],['notif','🔔','Reminders']];
+let DB={act:null,list:[]},S=null,view='home',qcat='🍔 Food',hr='m';
+const newB=n=>({id:Date.now(),name:n,created:Date.now(),cur:'₱',freq:'monthly',amt:0,d1:15,d2:30,bills:[],paid:{},spends:[],nOn:false,nDays:3});
+try{const j=JSON.parse(localStorage.getItem('mint2')||'null');if(j)DB=j;else{const o=JSON.parse(localStorage.getItem('mint')||'null');if(o&&(o.amt||(o.bills&&o.bills.length))){const b=Object.assign(newB('My Budget'),o);DB={act:b.id,list:[b]}}}}catch(e){}
+const save=()=>{try{localStorage.setItem('mint2',JSON.stringify(DB))}catch(e){}try{clearTimeout(window._ps);window._ps=setTimeout(syncPush,800)}catch(e){}};
+const pick=()=>{S=DB.list.find(b=>b.id===DB.act)||null};pick();
+const mk=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)};
+const m=n=>S.cur+Math.round(n).toLocaleString();
+const dueD=d=>{const n=new Date(),l=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();return new Date(n.getFullYear(),n.getMonth(),Math.min(d,l))};
+const left=d=>{const t=new Date();t.setHours(0,0,0,0);return Math.round((dueD(d)-t)/864e5)};
+const isPaid=b=>(S.paid[mk()]||[]).includes(b.id);
+const curSp=()=>S.spends.filter(s=>s.k===mk());
+function calc(){const inc=S.amt*(S.freq==='bimonthly'?2:1),bt=S.bills.reduce((a,b)=>a+b.amt,0),
+ pd=S.bills.filter(isPaid).reduce((a,b)=>a+b.amt,0),sp=curSp().reduce((a,b)=>a+b.amt,0),lf=inc-bt-sp;
+ const st=inc<=0?['Set up','']:lf<0?['Critical','bad']:lf<inc*.2?['Tight','tight']:['Healthy','ok'];
+ return{inc,bt,pd,sp,lf,st}}
+function sorted(){return[...S.bills].sort((a,b)=>(isPaid(a)-isPaid(b))||left(a.day)-left(b.day))}
+function due(b){const l=left(b.day);return isPaid(b)?'Paid ✓':l<0?`Overdue ${-l}d`:l===0?'Due today':`In ${l} day${l>1?'s':''}`}
+function tg(){$('#side').classList.toggle('open');$('#scrim').classList.toggle('open')}
+function go(x){view=x;$('#side').classList.remove('open');$('#scrim').classList.remove('open');render()}
+function nav(){$('#side').innerHTML='<div class="logo">🌿 Mint Budget</div>'+NAV.map(n=>`<button class="${view===n[0]?'on':''}" onclick="go('${n[0]}')"><span>${n[1]}</span>${n[2]}</button>`).join('')}
+function donut(c){const tot=Math.max(c.inc,c.bt+c.sp,1),seg=[[c.bt,'var(--warn)'],[c.sp,'#7aa7f0'],[Math.max(c.lf,0),'var(--mint)']];let o=25,s='';
+ seg.forEach(([v,col])=>{const p=v/tot*100;s+=`<circle r="15.9" cx="21" cy="21" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="${p} ${100-p}" stroke-dashoffset="${o}"/>`;o-=p});
+ const ring=c.lf<0?'<circle r="15.9" cx="21" cy="21" fill="none" stroke="var(--bad)" stroke-width="5"/>':'<circle r="15.9" cx="21" cy="21" fill="none" stroke="var(--mint2)" stroke-width="5"/>'+s;
+ return`<svg width="170" height="170" viewBox="0 0 42 42">${ring}<text x="21" y="22" text-anchor="middle" font-size="4.2" fill="var(--ink)" font-weight="700">${m(c.lf)}</text><text x="21" y="27" text-anchor="middle" font-size="2.6" fill="var(--mut)">${c.lf<0?'over budget':'left'}</text></svg>`}
+function cats(){const o={};S.bills.forEach(b=>o[b.cat]=(o[b.cat]||0)+b.amt);curSp().forEach(s=>o[s.cat]=(o[s.cat]||0)+s.amt);return Object.entries(o).sort((a,b)=>b[1]-a[1])}
+function tips(c){const t=[];if(c.inc<=0)return[['👋','Start in Budget Setup: enter your salary and pay schedule.']];
+ const bp=c.bt/c.inc*100;
+ if(c.lf<0)t.push(['🚨',`You are ${m(-c.lf)} over budget. Pause non-essential spending and review bills you can reduce or move.`]);
+ else if(c.lf<c.inc*.2)t.push(['⚠️','Less than 20% of income is left. Try to hold extra spending until next payday.']);
+ else t.push(['🌱',`Great — you have ${m(c.lf)} free. Consider putting at least half into savings.`]);
+ if(bp>50)t.push(['🧾',`Bills take ${Math.round(bp)}% of income. Aim for under 50% — look for cheaper plans or subscriptions to cut.`]);
+ const od=S.bills.filter(b=>!isPaid(b)&&left(b.day)<0);if(od.length)t.push(['⏰',`${od.length} overdue bill(s): ${od.map(b=>b.name).join(', ')}. Pay these first to avoid penalties.`]);
+ const sp=c.sp/c.inc*100;if(sp>20)t.push(['⚡',`Quick spends are ${Math.round(sp)}% of income. Set a weekly fun-money limit.`]);
+ t.push(['🛟','Rule of thumb: 50% needs, 30% wants, 20% savings. Build an emergency fund of 3 months of bills.']);
+ if(S.freq==='bimonthly')t.push(['📅','Bi-monthly pay: pay big bills from the paycheck closest to their due date and keep a buffer from each.']);
+ return t}
+const LOGO='<svg class="lg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="var(--mint)"/><path d="M32 14c11 4 17 13 14 25-13 3-23-4-25-15 2-5 6-8 11-10z" fill="#fff" opacity=".95"/><path d="M24 46c4-9 10-15 19-19" stroke="var(--mint)" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';
+const DECO='<svg class="d1" viewBox="0 0 200 200" fill="none" stroke="var(--mint)"><circle cx="100" cy="100" r="95"/><circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="45"/><circle cx="100" cy="100" r="20" fill="var(--mint)"/></svg><svg class="d2" viewBox="0 0 64 64"><path d="M32 4c18 6 28 22 24 42-22 5-40-6-44-24C14 12 22 6 32 4z" fill="var(--mint)"/><path d="M14 58C22 36 34 24 50 16" stroke="var(--bg)" stroke-width="2" fill="none"/></svg><svg class="d3" width="140" height="140"><defs><pattern id="dp" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="2" fill="var(--mint)"/></pattern></defs><rect width="140" height="140" fill="url(#dp)"/></svg>';
+function homeV(){const c=S?calc():null;const ex=DB.list.map(b=>{const t=b.amt*(b.freq==='bimonthly'?2:1);return`<div class="row"><div class="g">${b.name}<br><small>${b.freq==='bimonthly'?'Bi-monthly':'Monthly'} · ${b.cur}${Math.round(t).toLocaleString()}/mo · ${b.bills.length} bills${b.id===DB.act?' · active':''}</small></div><button class="btn s" onclick="useB(${b.id})">Continue</button><button class="x" onclick="delBud(${b.id})">✕</button></div>`}).join('');
+ return`<div class="home">${DECO}<div class="hero">${LOGO}<div><h2>Mint Budget</h2><p class="sub">Plan. Pay. Breathe. Pick up where you left off, or start fresh.</p></div></div>${S?`<div class="card"><b>Continue with “${S.name}”</b> <span class="pill ${c.st[1]}">${c.st[0]}</span><p class="sub" style="margin:6px 0 0">${m(c.lf)} left this month</p><button class="btn" onclick="go('dash')">Continue →</button></div>`:''}${DB.list.length?`<div class="card"><b>Your budgets</b>${ex}</div>`:''}<div class="card"><b>Create a new budget</b><div class="f"><div><label>Budget name</label><input id="hn" placeholder="e.g. October budget"></div></div><button class="btn" onclick="newBud()">Create and set up</button></div></div>`}
+function useB(i){DB.act=i;save();pick();go('dash')}
+function newBud(){const n=($('#hn').value||'').trim()||'Budget '+(DB.list.length+1),b=newB(n);DB.list.push(b);DB.act=b.id;save();pick();go('setup')}
+function delBud(i){if(!confirm('Delete this budget?'))return;DB.list=DB.list.filter(b=>b.id!==i);if(DB.act===i)DB.act=DB.list[0]?DB.list[0].id:null;save();pick();render()}
+function periods(){const inc=S.amt*(S.freq==='bimonthly'?2:1),now=new Date(),c0=new Date(S.created||Date.now()),all=[];
+ if(hr==='m'){const cur=now.getFullYear()*12+now.getMonth();for(let t=c0.getFullYear()*12+c0.getMonth();t<=cur;t++){const yy=Math.floor(t/12),mm=t%12,key=yy+'-'+(mm+1);
+  const bt=S.bills.filter(b=>{const d=new Date(b.id);return d.getFullYear()*12+d.getMonth()<=t}).reduce((a,b)=>a+b.amt,0);
+  const sp=S.spends.filter(s=>s.k===key).reduce((a,b)=>a+b.amt,0);
+  all.push({l:new Date(yy,mm,1).toLocaleString('default',{month:'short'}),v:inc-bt-sp})}return all.slice(-6)}
+ const w=864e5*7,st=new Date(Math.min(c0,now));st.setHours(0,0,0,0);st.setDate(st.getDate()-st.getDay());
+ const bt=S.bills.reduce((a,b)=>a+b.amt,0),al=(inc-bt)/4.345;
+ for(let t=st.getTime();t<=now.getTime();t+=w){const sp=S.spends.filter(s=>s.id>=t&&s.id<t+w).reduce((a,b)=>a+b.amt,0);all.push({l:new Date(t).toLocaleDateString('default',{month:'short',day:'numeric'}),v:al-sp})}
+ return all.slice(-8)}
+function trend(){const P=periods(),n=P.length,vs=P.map(p=>p.v),mn=Math.min(0,...vs),mx=Math.max(0,...vs),rg=(mx-mn)||1,W=600,H=200,px=i=>n>1?40+i*(W-80)/(n-1):W/2,py=v=>20+(mx-v)/rg*(H-50);
+ const line=n>1?`<polyline fill="none" stroke="var(--mint)" stroke-width="2.5" points="${P.map((p,i)=>px(i)+','+py(p.v)).join(' ')}"/>`:'';
+ const dots=P.map((p,i)=>`<circle cx="${px(i)}" cy="${py(p.v)}" r="5" fill="${p.v<0?'var(--bad)':'var(--mint)'}"/><text x="${px(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--mut)">${p.l}</text>`).join('');
+ return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Budget trend</b><span><button class="chip ${hr==='m'?'on':''}" onclick="hr='m';render()">Months</button> <button class="chip ${hr==='w'?'on':''}" onclick="hr='w';render()">Weeks</button></span></div><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin-top:8px"><line x1="10" x2="${W-10}" y1="${py(0)}" y2="${py(0)}" stroke="var(--mut)" stroke-dasharray="4 4"/><text x="12" y="${py(0)-4}" font-size="10" fill="var(--mut)">0</text>${line}${dots}</svg>${P.map(p=>`<div class="row"><div class="g">${p.l}</div><span class="pill ${p.v<0?'bad':'ok'}">${p.v<0?'Short '+m(-p.v):'Extra '+m(p.v)}</span></div>`).join('')}<p class="sub" style="margin:8px 0 0;font-size:13px">${hr==='m'?'Income minus bills and quick spends each month.':'Weekly room (income minus bills, spread over weeks) minus quick spends.'} History starts when this budget was created${n<2?', so more points appear as time passes':''}.</p></div>`}
+function render(){if(!S&&view!=='home')view='home';nav();const c=S?calc():null,V=$('#v');let h='';
+if(view==='home')h=homeV();
+if(view==='dash'){const up=sorted().filter(b=>!isPaid(b)).slice(0,4),ct=cats(),mx=ct[0]?ct[0][1]:1;
+ h=`<h2>${S.name||'Dashboard'}</h2><p class="sub">${new Date().toLocaleString('default',{month:'long',year:'numeric'})} · <span class="pill ${c.st[1]}">${c.st[0]}</span></p>
+ <div class="grid"><div class="card stat"><small>Income</small><b>${m(c.inc)}</b></div><div class="card stat"><small>Bills</small><b>${m(c.bt)}</b></div><div class="card stat"><small>Quick spends</small><b>${m(c.sp)}</b></div><div class="card stat"><small>Remaining</small><b style="color:${c.lf<0?'var(--bad)':'inherit'}">${m(c.lf)}</b></div></div>
+ <div class="card"><b>Where your money goes</b><div class="chart">${donut(c)}<div><div>🟡 Bills ${m(c.bt)}</div><div>🔵 Quick spends ${m(c.sp)}</div><div>🟢 Left ${m(Math.max(c.lf,0))}</div><div style="color:var(--mut);margin-top:8px">Bills paid: ${m(c.pd)} of ${m(c.bt)}</div></div></div></div>
+ <div class="card"><b>Spending by category</b>${ct.length?ct.map(([k,v])=>`<div style="margin-top:10px">${k} <small style="float:right">${m(v)}</small><div class="bar"><i style="width:${v/mx*100}%"></i></div></div>`).join(''):'<p class="sub">No data yet.</p>'}</div>
+ ${trend()}
+ ${S.freq==='bimonthly'&&S.amt?pay():''}
+ <div class="card"><b>Pay next</b>${up.length?up.map(b=>`<div class="row"><div class="g">${b.name}<br><small>${due(b)} · day ${b.day}</small></div><b>${m(b.amt)}</b></div>`).join(''):'<p class="sub">Nothing pending 🎉</p>'}</div>`}
+if(view==='setup')h=`<h2>Budget Setup</h2><p class="sub">Tell us how you get paid.</p><div class="card"><div class="f">
+ <div><label>Currency symbol</label><input id="cur" value="${S.cur}" maxlength="3"></div>
+ <div><label>Salary schedule</label><select id="fr" onchange="S.freq=this.value;sv(1)"><option value="monthly" ${S.freq==='monthly'?'selected':''}>Once a month</option><option value="bimonthly" ${S.freq==='bimonthly'?'selected':''}>Bi-monthly (twice a month)</option></select></div>
+ <div><label>${S.freq==='bimonthly'?'Amount per payday':'Monthly salary'}</label><input id="am" type="number" min="0" value="${S.amt||''}"></div></div>
+ ${S.freq==='bimonthly'?`<div class="f"><div><label>1st payday (day of month)</label><input id="d1" type="number" min="1" max="31" value="${S.d1}"></div><div><label>2nd payday (day of month)</label><input id="d2" type="number" min="1" max="31" value="${S.d2}"></div></div>`:''}
+ <button class="btn" onclick="sv()">Save setup</button></div>
+ <p class="sub">Total monthly income: <b>${m(c.inc)}</b></p>`;
+if(view==='bills')h=`<h2>Bills</h2><p class="sub">Sorted by what's due soonest.</p><div class="card"><b>Add a bill</b><div class="f"><div><label>Name</label><input id="bn" placeholder="Electricity"></div><div><label>Amount</label><input id="ba" type="number" min="0"></div><div><label>Due day of month</label><input id="bd" type="number" min="1" max="31"></div><div><label>Category</label><select id="bc"><option>🏠 Housing</option><option>💡 Utilities</option><option>📱 Subscriptions</option><option>🚗 Transport</option><option>💳 Debt</option><option>📦 Other</option></select></div></div><button class="btn" onclick="addB()">Add bill</button></div>
+ <div class="card">${sorted().map(b=>{const l=left(b.day),p=isPaid(b);return`<div class="row"><div class="g">${b.cat.split(' ')[0]} ${b.name}<br><small><span class="pill ${p?'ok':l<0?'bad':l<=3?'tight':''}">${due(b)}</span> · day ${b.day}</small></div><b>${m(b.amt)}</b><button class="btn s" onclick="pay1(${b.id})">${p?'Undo':'Mark paid'}</button><button class="x" onclick="delB(${b.id})">✕</button></div>`}).join('')||'<p class="sub">No bills yet.</p>'}</div>`;
+if(view==='quick'){const P=['🍔 Food','🎉 Hangout','🚕 Transport','🎁 Gift','🆘 Emergency','🛒 Other'];
+ h=`<h2>Quick Spend</h2><p class="sub">Unplanned hangout or surprise expense? Log it fast.</p><div class="card"><div class="chips">${P.map(p=>`<button class="chip ${qcat===p?'on':''}" onclick="qcat='${p}';render()">${p}</button>`).join('')}</div>
+ <div class="f"><div><label>What was it? (optional)</label><input id="qn" placeholder="Dinner with friends"></div><div><label>Amount</label><input id="qa" type="number" min="0"></div></div><button class="btn" onclick="addQ()">Add expense</button></div>
+ <div class="card"><b>This month</b>${curSp().slice().reverse().map(s=>`<div class="row"><div class="g">${s.cat.split(' ')[0]} ${s.name||s.cat.split(' ')[1]}<br><small>${s.date}</small></div><b>${m(s.amt)}</b><button class="x" onclick="delQ(${s.id})">✕</button></div>`).join('')||'<p class="sub">Nothing yet.</p>'}</div>`}
+if(view==='tips')h=`<h2>Tips</h2><p class="sub">Based on your current budget.</p><div class="card">${tips(c).map(t=>`<div class="tip"><span>${t[0]}</span><div>${t[1]}</div></div>`).join('')}</div>`;
+if(view==='notif'){const al=alerts();h=`<h2>Reminders</h2><p class="sub">Get notified before bills are due.</p><div class="card"><label>Remind me before due date</label><select id="nd" onchange="S.nDays=+this.value;save()">${[1,2,3,5,7].map(n=>`<option value="${n}" ${S.nDays===n?'selected':''}>${n} day${n>1?'s':''} before</option>`).join('')}</select>
+ <button class="btn" onclick="enN()">${S.nOn?'Notifications on ✓ (re-check)':'Enable notifications'}</button>
+ <button class="btn s" style="margin-left:8px" onclick="testN()">Send test</button><p class="sub" style="margin-top:12px;font-size:13px">Alerts arrive on this device at 9:00 AM, even when the app is closed. On iPhone: Share &gt; Add to Home Screen first, then enable here.</p></div>
+ <div class="card"><b>Upcoming alerts</b><div style="margin-top:10px">${al.map(a=>`<div class="alert ${a.l<0?'bad':''}">${a.t}</div>`).join('')||'<p class="sub">No bills due soon.</p>'}</div></div>`}
+V.innerHTML=view==='home'?h:`<div class="home">${DECO}${h}</div>`}
+function pay(){const a=S.amt,res=[[S.d1,S.d2,0],[S.d2,S.d1,0]];const p1=S.bills.filter(b=>b.day>=S.d1&&b.day<S.d2).reduce((x,b)=>x+b.amt,0),p2=S.bills.reduce((x,b)=>x+b.amt,0)-p1;
+ return`<div class="card"><b>Per paycheck</b><div class="row"><div class="g">Payday ${S.d1}<br><small>Bills ${m(p1)}</small></div><b style="color:${a-p1<0?'var(--bad)':'inherit'}">${m(a-p1)} free</b></div><div class="row"><div class="g">Payday ${S.d2}<br><small>Bills ${m(p2)}</small></div><b style="color:${a-p2<0?'var(--bad)':'inherit'}">${m(a-p2)} free</b></div></div>`}
+function sv(r){if(!r){S.cur=$('#cur').value||'₱';S.amt=+$('#am').value||0;if($('#d1')){S.d1=+$('#d1').value||15;S.d2=+$('#d2').value||30}}save();render()}
+function addB(){const n=$('#bn').value.trim(),a=+$('#ba').value,d=+$('#bd').value;if(!n||!a||d<1||d>31)return;S.bills.push({id:Date.now(),name:n,amt:a,day:d,cat:$('#bc').value});save();render()}
+function delB(i){S.bills=S.bills.filter(b=>b.id!==i);save();render()}
+function pay1(i){const k=mk(),l=S.paid[k]||[];S.paid[k]=l.includes(i)?l.filter(x=>x!==i):[...l,i];save();render()}
+function addQ(){const a=+$('#qa').value;if(!a)return;S.spends.push({id:Date.now(),name:$('#qn').value.trim(),amt:a,cat:qcat,k:mk(),date:new Date().toLocaleDateString()});save();render()}
+function delQ(i){S.spends=S.spends.filter(s=>s.id!==i);save();render()}
+function alerts(){return S.bills.filter(b=>!isPaid(b)&&left(b.day)<=S.nDays).sort((a,b)=>left(a.day)-left(b.day)).map(b=>({l:left(b.day),b,t:`${b.name} — ${m(b.amt)} · ${due(b)}`}))}
+function chk(f){return;if(!S||!S.nOn||!('Notification' in window)||Notification.permission!=='granted')return;
+ let seen={};try{seen=JSON.parse(localStorage.getItem('mintN')||'{}')}catch(e){}const day=new Date().toDateString();
+ alerts().forEach(a=>{const k=a.b.id+day;if(seen[k]&&!f)return;seen[k]=1;try{new Notification('Bill reminder',{body:a.t})}catch(e){}});
+ try{localStorage.setItem('mintN',JSON.stringify(seen))}catch(e){}}
+let swReg=null;
+const b64=t=>{const p='='.repeat((4-t.length%4)%4),x=atob((t+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...x].map(c=>c.charCodeAt(0)))};
+async function sw(){if(!('serviceWorker' in navigator))return null;return swReg=swReg||await navigator.serviceWorker.register('/sw.js')}
+function remList(){const L=[],n=new Date(),k0=mk();
+ DB.list.filter(b=>b.nOn).forEach(b=>b.bills.forEach(x=>{const paid=(b.paid[k0]||[]).includes(x.id);
+  for(let k=0;k<3;k++){if(k===0&&paid)continue;const last=new Date(n.getFullYear(),n.getMonth()+k+1,0).getDate(),d=new Date(n.getFullYear(),n.getMonth()+k,Math.min(x.day,last));
+   [b.nDays,0].forEach((off,j)=>{const t=new Date(d);t.setDate(t.getDate()-off);t.setHours(9,0,0,0);if(t>n)L.push({id:b.id+'-'+x.id+'-'+k+'-'+j,at:t.toISOString(),title:off?'Bill coming up':'Bill due today',body:x.name+' \u2014 '+b.cur+Math.round(x.amt).toLocaleString()+(off?' due in '+off+' day(s)':'')})})}}));
+ return L}
+async function syncPush(){try{if(!('PushManager' in window)||Notification.permission!=='granted')return;const r=await navigator.serviceWorker.ready,sub=await r.pushManager.getSubscription();if(!sub)return;
+ await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sub:sub.toJSON(),reminders:remList()})})}catch(e){}}
+async function enN(){if(!('serviceWorker' in navigator)||!('PushManager' in window)){alert('Push is not supported here. On iPhone: Share > Add to Home Screen, then open the app from your home screen.');return}
+ const p=await Notification.requestPermission();if(p!=='granted'){alert('Notifications are blocked. Allow them in your browser/site settings.');return}
+ try{const r=await navigator.serviceWorker.ready,k=(await(await fetch('/api/vapid')).json()).key;
+  await r.pushManager.getSubscription()||await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(k)});S.nOn=true;save();await syncPush();render()}catch(e){alert('Could not enable push: '+e.message)}}
+async function testN(){try{const r=await navigator.serviceWorker.ready,sub=await r.pushManager.getSubscription();if(!sub){alert('Enable notifications first.');return}
+ await fetch('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sub:sub.toJSON()})})}catch(e){}}
+render();sw().then(syncPush);
+</script></body></html>
