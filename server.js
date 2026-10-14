@@ -2,7 +2,7 @@ const express=require('express'),webpush=require('web-push'),fs=require('fs'),pa
 const F=process.env.DATA_FILE||path.join(__dirname,'data.json');
 let D={keys:null,subs:{}};try{D=JSON.parse(fs.readFileSync(F,'utf8'))}catch(e){}
 if(process.env.VAPID_PUBLIC&&process.env.VAPID_PRIVATE)D.keys={publicKey:process.env.VAPID_PUBLIC,privateKey:process.env.VAPID_PRIVATE};
-else if(!D.keys)D.keys=webpush.generateVAPIDKeys();
+else if(!D.keys){D.keys=webpush.generateVAPIDKeys();console.log('NEW VAPID KEYS - copy these into Render env vars:\nVAPID_PUBLIC='+D.keys.publicKey+'\nVAPID_PRIVATE='+D.keys.privateKey)}
 webpush.setVapidDetails(process.env.VAPID_SUBJECT||'mailto:admin@example.com',D.keys.publicKey,D.keys.privateKey);
 const save=()=>{try{fs.writeFileSync(F,JSON.stringify(D))}catch(e){console.error('save failed',e.message)}};
 const app=express();app.use(express.json({limit:'300kb'}));app.use(express.static(path.join(__dirname,'public')));
