@@ -1,4 +1,4 @@
-# 🌿 Mint Budget
+# 🌿 ISIGO: Budget Tracker
 
 A minimalist personal budget planner with a mint-green design. Set your salary, add your bills, and see what to pay first, what's left, and how your budget is trending. Bill reminders arrive on your phone as push notifications, even when the app is closed.
 
@@ -8,6 +8,7 @@ A minimalist personal budget planner with a mint-green design. Set your salary, 
 - **Bills**: name, amount, due day and category. Sorted so the most urgent bill comes first, with Overdue / Due today / In N days labels. Mark bills paid each month.
 - **Quick Spend**: a shortcut page for unplanned expenses such as a spontaneous hangout, food, a gift or an emergency.
 - **Dashboard**: status (Healthy, Tight or Critical), a donut chart, category bars, a per-paycheck breakdown for bi-monthly pay, and a weekly/monthly trend line that shows when you had extra or came up short.
+- **Savings Tracker**: set a goal with a target amount and time frame (months or years), log what you save, and see completion rings, progress bars and whether you are on track.
 - **Tips**: advice that changes with your budget situation.
 - **Reminders**: web push notifications at 9:00 AM, N days before a bill is due and on the due day itself.
 - **Installable**: works as a Progressive Web App (Android: Install app; iPhone: Add to Home Screen).
